@@ -47,7 +47,7 @@ func LoadConfig() *Configuration {
 			Model:                     "text-davinci-003",
 			Temperature:               0.9,
 			SessionClearToken:         "下一个问题",
-			ChatPrivateTriggerKeyword: "bot",
+			ChatPrivateTriggerKeyword: "",
 		}
 
 		// 判断配置文件是否存在，存在直接JSON读取
