@@ -11,7 +11,7 @@
 #RUN mkdir /app
 #WORKDIR /app
 #COPY --from=builder /app/ .
-#RUN chmod +x wechatbot && cp config.dev.json config.json && yum -y install vim net-tools telnet wget curl && yum clean all
+#RUN chmod +x wechatbot && cp config.json config.json && yum -y install vim net-tools telnet wget curl && yum clean all
 #
 #CMD ./wechatbot
 
@@ -58,8 +58,8 @@ WORKDIR /app
 # 而是从上一个阶段构建的 builder容器中拉取
 COPY --from=builder /app/wechatbot .
 ADD supervisord.conf /etc/supervisord.conf
-ADD config.dev.json /app/config.dev.json
-RUN cp config.dev.json config.json
+ADD config.json /app/config.dev.json
+RUN cp config.json config.json
 
 # 通过 Supervisor 管理服务
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]

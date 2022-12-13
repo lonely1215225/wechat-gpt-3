@@ -57,8 +57,11 @@ func NewUserMessageHandler(message *openwechat.Message) (MessageHandlerInterface
 
 // handle 处理消息
 func (h *UserMessageHandler) handle() error {
-	if h.msg.IsText() && h.sender.Self.IsOwner == 1 {
-		if !strings.Contains(h.msg.RawContent, config.LoadConfig().ChatPrivateTriggerKeyword) {
+	user, err := h.sender.Self.Bot.GetCurrentUser()
+	logger.Info(err)
+	logger.Info(h.msg.RawContent)
+	if h.msg.IsText() && h.sender.ID() != user.ID() {
+		if !strings.Contains(h.msg.Content, config.LoadConfig().ChatPrivateTriggerKeyword) {
 			return nil
 		}
 		return h.ReplyText()
@@ -104,6 +107,7 @@ func (h *UserMessageHandler) getRequestText() string {
 	// 1.去除空格以及换行
 	requestText := strings.TrimSpace(h.msg.Content)
 	requestText = strings.Trim(h.msg.Content, "\n")
+	requestText = strings.Replace(requestText, config.LoadConfig().ChatPrivateTriggerKeyword, "", 1)
 
 	// 2.获取上下文，拼接在一起，如果字符长度超出4000，截取为4000。（GPT按字符长度算），达芬奇3最大为4068，也许后续为了适应要动态进行判断。
 	sessionText := h.service.GetUserSessionContext()

@@ -74,7 +74,7 @@ $ tail -f -n 50 /app/run.log
 
 ```sh
 # 复制配置文件，根据自己实际情况，调整配置里的内容
-$ cp config.dev.json config.json  # 其中 config.dev.json 从项目的根目录获取
+$ cp config.json config.json  # 其中 config.json 从项目的根目录获取
 
 # 运行项目
 $ docker run -itd --name wechatbot -v `pwd`/config.json:/app/config.json docker.mirrors.sjtug.sjtu.edu.cn/qingshui869413421/wechatbot:latest
