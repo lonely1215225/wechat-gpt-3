@@ -29,6 +29,8 @@ type Configuration struct {
 	ReplyPrefix string `json:"reply_prefix"`
 	// 清空会话口令
 	SessionClearToken string `json:"session_clear_token"`
+	// 私聊关键词触发器
+	ChatPrivateTriggerKeyword string `json:"chatPrivateTriggerKeyword"`
 }
 
 var config *Configuration
@@ -39,12 +41,13 @@ func LoadConfig() *Configuration {
 	once.Do(func() {
 		// 给配置赋默认值
 		config = &Configuration{
-			AutoPass:          false,
-			SessionTimeout:    60,
-			MaxTokens:         512,
-			Model:             "text-davinci-003",
-			Temperature:       0.9,
-			SessionClearToken: "下一个问题",
+			AutoPass:                  false,
+			SessionTimeout:            60,
+			MaxTokens:                 512,
+			Model:                     "text-davinci-003",
+			Temperature:               0.9,
+			SessionClearToken:         "下一个问题",
+			ChatPrivateTriggerKeyword: "bot",
 		}
 
 		// 判断配置文件是否存在，存在直接JSON读取
@@ -72,6 +75,7 @@ func LoadConfig() *Configuration {
 		Temperature := os.Getenv("TEMPREATURE")
 		ReplyPrefix := os.Getenv("REPLY_PREFIX")
 		SessionClearToken := os.Getenv("SESSION_CLEAR_TOKEN")
+		ChatPrivateTriggerKeyword := os.Getenv("CHAT_PRIVATE_TRIGGER_KEYWORD")
 		if ApiKey != "" {
 			config.ApiKey = ApiKey
 		}
@@ -110,6 +114,9 @@ func LoadConfig() *Configuration {
 		}
 		if SessionClearToken != "" {
 			config.SessionClearToken = SessionClearToken
+		}
+		if ChatPrivateTriggerKeyword != "" {
+			config.ChatPrivateTriggerKeyword = ChatPrivateTriggerKeyword
 		}
 	})
 	if config.ApiKey == "" {

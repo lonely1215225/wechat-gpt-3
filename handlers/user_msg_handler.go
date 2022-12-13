@@ -58,6 +58,9 @@ func NewUserMessageHandler(message *openwechat.Message) (MessageHandlerInterface
 // handle 处理消息
 func (h *UserMessageHandler) handle() error {
 	if h.msg.IsText() {
+		if !strings.Contains(h.msg.RawContent, config.LoadConfig().ChatPrivateTriggerKeyword) {
+			return nil
+		}
 		return h.ReplyText()
 	}
 	return nil
