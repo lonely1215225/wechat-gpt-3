@@ -61,7 +61,8 @@ func (h *UserMessageHandler) handle() error {
 	logger.Info(err)
 	logger.Info(h.msg.RawContent)
 	if h.msg.IsText() && h.sender.ID() != user.ID() {
-		if !strings.Contains(h.msg.Content, config.LoadConfig().ChatPrivateTriggerKeyword) {
+		keyword := config.LoadConfig().ChatPrivateTriggerKeyword
+		if keyword != "" && !strings.Contains(h.msg.Content, keyword) {
 			return nil
 		}
 		return h.ReplyText()
