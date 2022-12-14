@@ -19,6 +19,12 @@ type TokenMessageHandler struct {
 	service service.UserServiceInterface
 }
 
+func (t *TokenMessageHandler) LimitGPT() error {
+	//TODO implement me
+	logger.Info("limit 100 per day")
+	panic("implement me")
+}
+
 func TokenMessageContextHandler() func(ctx *openwechat.MessageContext) {
 	return func(ctx *openwechat.MessageContext) {
 		msg := ctx.Message

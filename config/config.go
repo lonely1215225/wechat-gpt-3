@@ -31,6 +31,10 @@ type Configuration struct {
 	SessionClearToken string `json:"session_clear_token"`
 	// 私聊关键词触发器
 	ChatPrivateTriggerKeyword string `json:"chatPrivateTriggerKeyword"`
+	// 每日群聊限制次数
+	GroupChatLimitCount uint `json:"groupChatLimitCount"`
+	// 每日私聊限制次数
+	PrivateChatLimitCount uint `json:"privateChatLimitCount"`
 }
 
 var config *Configuration

@@ -9,6 +9,7 @@ import (
 	"github.com/869413421/wechatbot/service"
 	"github.com/eatmoreapple/openwechat"
 	"strings"
+	"time"
 )
 
 var _ MessageHandlerInterface = (*UserMessageHandler)(nil)
@@ -21,6 +22,30 @@ type UserMessageHandler struct {
 	sender *openwechat.User
 	// 实现的用户业务
 	service service.UserServiceInterface
+}
+
+var userCount uint
+
+func (h *UserMessageHandler) LimitGPT() error {
+
+	userCount++
+
+	// 获取现在
+	now := time.Now()
+	// 定义当天结束时间
+	end := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 0, time.Local)
+	// 计算开始到结束剩下多少时间
+	left := end.Sub(now).Hours()
+
+	if left < 0 {
+		userCount = 0
+	}
+
+	if config.LoadConfig().PrivateChatLimitCount < userCount {
+		return errors.New("user limited")
+	}
+
+	return nil
 }
 
 func UserMessageContextHandler() func(ctx *openwechat.MessageContext) {
@@ -59,10 +84,13 @@ func NewUserMessageHandler(message *openwechat.Message) (MessageHandlerInterface
 func (h *UserMessageHandler) handle() error {
 	user, err := h.sender.Self.Bot.GetCurrentUser()
 	logger.Info(err)
-	logger.Info(h.msg.RawContent)
 	if h.msg.IsText() && h.sender.ID() != user.ID() {
 		keyword := config.LoadConfig().ChatPrivateTriggerKeyword
-		if keyword != "" && !strings.Contains(h.msg.Content, keyword) {
+		content := h.msg.Content
+
+		prefixIndex := strings.Index(content, keyword)
+		lastIndex := strings.LastIndex(content, keyword)
+		if keyword != "" && (prefixIndex == -1 || lastIndex == -1) {
 			return nil
 		}
 		return h.ReplyText()
@@ -73,6 +101,13 @@ func (h *UserMessageHandler) handle() error {
 // ReplyText 发送文本消息到群
 func (h *UserMessageHandler) ReplyText() error {
 	logger.Info(fmt.Sprintf("Received User %v Text Msg : %v", h.sender.NickName, h.msg.Content))
+
+	errLimit := h.LimitGPT()
+	if errLimit != nil {
+		h.msg.ReplyText("出于安全与成本的考虑 GPT已超过今日最大使用次数 请联系管理员进行配置")
+		return errors.New("超过今日最大使用次数 请联系管理员进行配置")
+	}
+
 	// 1.获取上下文，如果字符串为空不处理
 	requestText := h.getRequestText()
 	if requestText == "" {

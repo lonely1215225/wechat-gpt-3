@@ -3,11 +3,13 @@ package handlers
 import (
 	"errors"
 	"fmt"
+	"github.com/869413421/wechatbot/config"
 	"github.com/869413421/wechatbot/gpt"
 	"github.com/869413421/wechatbot/pkg/logger"
 	"github.com/869413421/wechatbot/service"
 	"github.com/eatmoreapple/openwechat"
 	"strings"
+	"time"
 )
 
 var _ MessageHandlerInterface = (*GroupMessageHandler)(nil)
@@ -24,6 +26,31 @@ type GroupMessageHandler struct {
 	sender *openwechat.User
 	// 实现的用户业务
 	service service.UserServiceInterface
+}
+
+// 被群里@次数
+var groupCount uint
+
+func (g *GroupMessageHandler) LimitGPT() error {
+
+	groupCount++
+
+	// 获取现在
+	now := time.Now()
+	// 定义当天结束时间
+	end := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 0, time.Local)
+	// 计算开始到结束剩下多少时间
+	left := end.Sub(now).Hours()
+
+	if left < 0 {
+		groupCount = 0
+	}
+
+	if config.LoadConfig().GroupChatLimitCount < groupCount {
+		return errors.New("group limited")
+	}
+
+	return nil
 }
 
 func GroupMessageContextHandler() func(ctx *openwechat.MessageContext) {
@@ -83,7 +110,11 @@ func (g *GroupMessageHandler) ReplyText() error {
 	if !g.msg.IsAt() {
 		return nil
 	}
-
+	errLimit := g.LimitGPT()
+	if errLimit != nil {
+		g.msg.ReplyText("为了您的安全与费用，GPT已超过今日最大使用次数 请联系管理员进行配置")
+		return errors.New("超过今日最大使用次数 请联系管理员进行配置")
+	}
 	// 2.获取请求的文本，如果为空字符串不处理
 	requestText := g.getRequestText()
 	if requestText == "" {
