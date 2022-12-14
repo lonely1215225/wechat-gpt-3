@@ -105,7 +105,7 @@ func (g *GroupMessageHandler) handle() error {
 
 // ReplyText 发送文本消息到群
 func (g *GroupMessageHandler) ReplyText() error {
-	logger.Info(fmt.Sprintf("Received Group %v Text Msg : %v", g.group.NickName, g.msg.Content))
+	logger.Info(fmt.Sprintf("Received Group %v Text Msg : %v", g.sender.NickName, g.msg.Content))
 	// 1.不是@的不处理
 	if !g.msg.IsAt() {
 		return nil

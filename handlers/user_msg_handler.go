@@ -82,15 +82,20 @@ func NewUserMessageHandler(message *openwechat.Message) (MessageHandlerInterface
 
 // handle 处理消息
 func (h *UserMessageHandler) handle() error {
+	triggerKeyword := config.LoadConfig().ChatPrivateTriggerKeyword
+	logger.Info(h.msg.Content, triggerKeyword)
+	if h.msg.Content == triggerKeyword {
+		h.msg.ReplyText("  你好 我是有时智能有时智障的GPT智能机器人 是否智障取决于你问我的问题 对于已知的事情我知道的很多 我可以用这些已知的事情帮你创作内容 \n  由于我是语言模型并非网络模型 所以我也会和人一样不知道今天的天气等等 \n  目前可以自定义私聊触发关键词、机器人回复的温度（更有创造性还是更明确答案的）、清空上下文记忆、私聊回复前缀、ai模型、自动通过好友、每日回答限制数 \n后期会根据情况上线一些问答小游戏、连接网络去获取实时信息、图片视频等内容发送等功能 敬请期待！！！")
+		return nil
+	}
 	user, err := h.sender.Self.Bot.GetCurrentUser()
 	logger.Info(err)
 	if h.msg.IsText() && h.sender.ID() != user.ID() {
-		keyword := config.LoadConfig().ChatPrivateTriggerKeyword
 		content := h.msg.Content
 
-		prefixIndex := strings.Index(content, keyword)
-		lastIndex := strings.LastIndex(content, keyword)
-		if keyword != "" && (prefixIndex == -1 || lastIndex == -1) {
+		prefixIndex := strings.Index(content, triggerKeyword)
+		lastIndex := strings.LastIndex(content, triggerKeyword)
+		if triggerKeyword != "" && (prefixIndex == -1 || lastIndex == -1) {
 			return nil
 		}
 		return h.ReplyText()

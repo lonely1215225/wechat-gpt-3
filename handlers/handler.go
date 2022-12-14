@@ -46,7 +46,7 @@ func NewHandler() (msgFunc func(msg *openwechat.Message), err error) {
 
 	// 处理群消息
 	dispatcher.RegisterHandler(func(message *openwechat.Message) bool {
-		return message.IsSendByGroup()
+		return message.IsSendByGroup() && !strings.Contains(message.Content, config.LoadConfig().SessionClearToken)
 	}, GroupMessageContextHandler())
 
 	// 好友申请
