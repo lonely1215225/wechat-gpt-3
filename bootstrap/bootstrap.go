@@ -5,6 +5,7 @@ import (
 	"github.com/869413421/wechatbot/handlers"
 	"github.com/869413421/wechatbot/pkg/logger"
 	"github.com/eatmoreapple/openwechat"
+	"os"
 )
 
 func Run() {
@@ -28,8 +29,13 @@ func Run() {
 	// 执行热登录
 	err = bot.HotLogin(reloadStorage, true)
 	if err != nil {
-		logger.Warning(fmt.Sprintf("login error: %v ", err))
-		return
+		filename := "storage.json"
+		err := os.Remove(filename)
+		if err != nil {
+			logger.Warning(fmt.Sprintf("storage.json remove with error: %v ", err))
+		}
+		logger.Info("删除storage成功 重新登陆中")
+		bot.HotLogin(reloadStorage, true)
 	}
 	// 阻塞主goroutine, 直到发生异常或者用户主动退出
 	bot.Block()

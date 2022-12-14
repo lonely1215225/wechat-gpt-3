@@ -19,6 +19,7 @@ var c = cache.New(config.LoadConfig().SessionTimeout, time.Minute*5)
 type MessageHandlerInterface interface {
 	handle() error
 	ReplyText() error
+	LimitGPT() error
 }
 
 // QrCodeCallBack 登录扫码回调，
