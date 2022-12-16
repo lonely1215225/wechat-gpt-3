@@ -34,8 +34,8 @@ func Run() {
 		if err != nil {
 			logger.Warning(fmt.Sprintf("storage.json remove with error: %v ", err))
 		}
-		logger.Info("删除storage成功 重新登陆中")
-		bot.HotLogin(reloadStorage, true)
+		logger.Info("删除storage成功 重新登陆")
+		return
 	}
 	// 阻塞主goroutine, 直到发生异常或者用户主动退出
 	bot.Block()

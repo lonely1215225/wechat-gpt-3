@@ -182,7 +182,7 @@ func (g *GroupMessageHandler) getRequestText() string {
 // buildReply 构建回复文本
 func (g *GroupMessageHandler) buildReplyText(reply string) string {
 	// 1.获取@我的用户
-	atText := "@" + g.sender.NickName
+	atText := "@" + g.sender.UserName
 	textSplit := strings.Split(reply, "\n\n")
 	if len(textSplit) > 1 {
 		trimText := textSplit[0]
