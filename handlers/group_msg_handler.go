@@ -8,6 +8,7 @@ import (
 	"github.com/869413421/wechatbot/pkg/logger"
 	"github.com/869413421/wechatbot/service"
 	"github.com/eatmoreapple/openwechat"
+	"path"
 	"strings"
 	"time"
 )
@@ -62,7 +63,6 @@ func GroupMessageContextHandler() func(ctx *openwechat.MessageContext) {
 			logger.Warning(fmt.Sprintf("init group message handler error: %s", err))
 			return
 		}
-
 		// 处理用户消息
 		err = handler.handle()
 		if err != nil {
@@ -73,6 +73,13 @@ func GroupMessageContextHandler() func(ctx *openwechat.MessageContext) {
 
 // NewGroupMessageHandler 创建群消息处理器
 func NewGroupMessageHandler(msg *openwechat.Message) (MessageHandlerInterface, error) {
+	if msg.IsJoinGroup() && config.LoadConfig().WelcomeToGroup {
+		content := msg.Content
+		split := strings.Split(strings.Split(content, "邀请")[1], "加入了群聊")
+		logger.Info(strings.Split(strings.Split(content, "邀请")[1], "加入了群聊"))
+		msg.ReplyText(path.Join("让我们热烈欢迎👏🏻", split[0], "加入了群聊"))
+		return nil, errors.New("invite success")
+	}
 	sender, err := msg.Sender()
 	if err != nil {
 		return nil, err
@@ -105,7 +112,7 @@ func (g *GroupMessageHandler) handle() error {
 
 // ReplyText 发送文本消息到群
 func (g *GroupMessageHandler) ReplyText() error {
-	logger.Info(fmt.Sprintf("Received Group %v Text Msg : %v", g.sender.NickName, g.msg.Content))
+	logger.Info(fmt.Sprintf("Received Group %v %v Text Msg : %v", g.group.NickName, g.sender.NickName, g.msg.Content))
 	// 1.不是@的不处理
 	if !g.msg.IsAt() {
 		return nil
