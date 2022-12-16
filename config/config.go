@@ -35,6 +35,8 @@ type Configuration struct {
 	GroupChatLimitCount uint `json:"groupChatLimitCount"`
 	// 每日私聊限制次数
 	PrivateChatLimitCount uint `json:"privateChatLimitCount"`
+	// 邀请欢迎
+	WelcomeToGroup bool `json:"welcomeToGroup"`
 }
 
 var config *Configuration
