@@ -52,6 +52,8 @@ func LoadConfig() *Configuration {
 			Temperature:               0.9,
 			SessionClearToken:         "下一个问题",
 			ChatPrivateTriggerKeyword: "",
+			GroupChatLimitCount:       200,
+			PrivateChatLimitCount:     100,
 		}
 
 		// 判断配置文件是否存在，存在直接JSON读取

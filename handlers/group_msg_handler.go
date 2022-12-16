@@ -105,7 +105,7 @@ func (g *GroupMessageHandler) handle() error {
 
 // ReplyText 发送文本消息到群
 func (g *GroupMessageHandler) ReplyText() error {
-	logger.Info(fmt.Sprintf("Received Group %v Text Msg : %v", g.group.NickName, g.msg.Content))
+	logger.Info(fmt.Sprintf("Received Group %v Text Msg : %v", g.sender.NickName, g.msg.Content))
 	// 1.不是@的不处理
 	if !g.msg.IsAt() {
 		return nil
@@ -182,7 +182,7 @@ func (g *GroupMessageHandler) getRequestText() string {
 // buildReply 构建回复文本
 func (g *GroupMessageHandler) buildReplyText(reply string) string {
 	// 1.获取@我的用户
-	atText := "@" + g.sender.NickName
+	atText := "@" + g.sender.UserName
 	textSplit := strings.Split(reply, "\n\n")
 	if len(textSplit) > 1 {
 		trimText := textSplit[0]
